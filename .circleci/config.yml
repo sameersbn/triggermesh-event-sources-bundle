@@ -93,20 +93,20 @@ jobs:
       - store_artifacts:
           path: /tmp/dist/
 
-  trigger-e2e-test:
-    executor:
-      name: go/default
-      tag: '1.19.1'
-    steps:
-      - run:
-          name: Sending dispatch event
-          command: |
-            curl \
-              -X POST \
-              -H "Accept: application/vnd.github+json" \
-              -H "Authorization: token ${GITHUB_TOKEN}" \
-              https://api.github.com/repos/triggermesh/triggermesh-event-sources-bundle/dispatches \
-              -d '{"event_type":"e2e-test","client_payload":{"commit_sha":"'${CIRCLE_SHA1}'"}}'
+  # trigger-e2e-test:
+  #   executor:
+  #     name: go/default
+  #     tag: '1.19.1'
+  #   steps:
+  #     - run:
+  #         name: Sending dispatch event
+  #         command: |
+  #           curl \
+  #             -X POST \
+  #             -H "Accept: application/vnd.github+json" \
+  #             -H "Authorization: token ${GITHUB_TOKEN}" \
+  #             https://api.github.com/repos/triggermesh/triggermesh-event-sources-bundle/dispatches \
+  #             -d '{"event_type":"e2e-test","client_payload":{"commit_sha":"'${CIRCLE_SHA1}'"}}'
 
   release:
     executor:
@@ -163,15 +163,15 @@ workflows:
               only: /^v([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
             branches:
               only: main
-      - trigger-e2e-test:
-          context: production
-          requires:
-            - publish-image
-          filters:
-            tags:
-              only: /^v([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
-            branches:
-              only: main
+      # - trigger-e2e-test:
+      #     context: production
+      #     requires:
+      #       - publish-image
+      #     filters:
+      #       tags:
+      #         only: /^v([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
+      #       branches:
+      #         only: main
       - release:
           context: production
           requires:
