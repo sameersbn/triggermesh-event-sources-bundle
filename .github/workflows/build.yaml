@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.19'
+
+    - name: Go caches
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/go/pkg/mod
+        key: ${{ github.job }}-${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ github.job }}-${{ runner.os }}-go-
+
+    - name: Build
+      run: make build
+      env:
+        BIN_OUTPUT_DIR: /tmp/build-output/
